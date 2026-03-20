@@ -4,18 +4,16 @@ import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, Users, Calendar, ClipboardList,
-  FileText, BarChart3, LogOut,
+  FileText, BarChart3, LogOut, Briefcase,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 
 const navItems = [
-  { to: '/manager/dashboard', label: 'Обзор', icon: LayoutDashboard },
-  { to: '/manager/employees', label: 'Сотрудники', icon: Users },
-  { to: '/manager/schedules', label: 'Графики', icon: Calendar },
-  { to: '/manager/tasks', label: 'Задачи', icon: ClipboardList },
-  { to: '/manager/leaves', label: 'Заявки', icon: FileText },
-  { to: '/manager/reports', label: 'Отчёты', icon: BarChart3 },
+  { to: '/manager/dashboard', label: 'Огляд',         icon: LayoutDashboard },
+  { to: '/manager/employees', label: 'Співробітники', icon: Users },
+  { to: '/manager/schedules', label: 'Графіки',       icon: Calendar },
+  { to: '/manager/tasks',     label: 'Завдання',      icon: ClipboardList },
+  { to: '/manager/leaves',    label: 'Заявки',        icon: FileText },
+  { to: '/manager/reports',   label: 'Звіти',         icon: BarChart3 },
 ]
 
 export function ManagerLayout() {
@@ -27,28 +25,39 @@ export function ManagerLayout() {
     navigate('/login')
   }
 
+  const initials = profile?.full_name
+    ?.split(' ')
+    .slice(0, 2)
+    .map(w => w[0])
+    .join('')
+    .toUpperCase() ?? '?'
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <aside className="flex w-60 flex-col border-r bg-card">
-        <div className="p-6">
-          <h1 className="text-lg font-bold text-foreground">HR Manager</h1>
-          <p className="text-xs text-muted-foreground mt-0.5 truncate">{profile?.full_name}</p>
+      <aside className="flex w-64 flex-col bg-slate-950 text-white shrink-0">
+        {/* Brand */}
+        <div className="flex items-center gap-3 px-5 py-5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500 shrink-0">
+            <Briefcase className="h-4 w-4 text-white" />
+          </div>
+          <span className="text-sm font-bold tracking-tight">WorkHR</span>
         </div>
 
-        <Separator />
+        <div className="mx-4 border-t border-slate-800" />
 
-        <nav className="flex-1 space-y-1 p-3">
+        {/* Nav */}
+        <nav className="flex-1 space-y-0.5 px-3 py-4">
           {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    ? 'bg-indigo-500/15 text-indigo-300 ring-1 ring-inset ring-indigo-500/30'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/70'
                 )
               }
             >
@@ -58,12 +67,25 @@ export function ManagerLayout() {
           ))}
         </nav>
 
-        <div className="p-3">
-          <Separator className="mb-3" />
-          <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground" onClick={handleLogout}>
-            <LogOut className="h-4 w-4" />
-            Выйти
-          </Button>
+        {/* User footer */}
+        <div className="mx-4 border-t border-slate-800" />
+        <div className="p-4">
+          <div className="flex items-center gap-3 rounded-lg px-2 py-2">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white">
+              {initials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-slate-200">{profile?.full_name}</p>
+              <p className="text-xs text-slate-500">Менеджер</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-slate-500 hover:text-slate-300 transition-colors"
+              title="Выйти"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </aside>
 

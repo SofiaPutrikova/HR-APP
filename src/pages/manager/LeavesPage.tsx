@@ -7,11 +7,11 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { LeaveRequestWithEmployee } from '@/hooks/useLeaves'
 
-const TYPE_LABEL: Record<string, string> = { sick: 'Больничный', vacation: 'Отпуск' }
+const TYPE_LABEL: Record<string, string> = { sick: 'Лікарняний', vacation: 'Відпустка' }
 const TYPE_VARIANT: Record<string, 'destructive' | 'secondary'> = { sick: 'destructive', vacation: 'secondary' }
 
 function formatDate(date: string) {
-  return new Date(date + 'T00:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
+  return new Date(date + 'T00:00:00').toLocaleDateString('uk-UA', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function daysBetween(start: string, end: string) {
@@ -30,18 +30,18 @@ export function ManagerLeavesPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Заявки на отпуск / больничный</h2>
-          <p className="text-muted-foreground mt-1">Рассматривайте и одобряйте заявки сотрудников</p>
+          <h2 className="text-2xl font-bold">Заявки на відпустку / лікарняний</h2>
+          <p className="text-muted-foreground mt-1">Розглядайте та затверджуйте заявки співробітників</p>
         </div>
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-44">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="pending">На рассмотрении</SelectItem>
-            <SelectItem value="approved">Одобренные</SelectItem>
-            <SelectItem value="rejected">Отклонённые</SelectItem>
-            <SelectItem value="all">Все</SelectItem>
+            <SelectItem value="pending">На розгляді</SelectItem>
+            <SelectItem value="approved">Затверджені</SelectItem>
+            <SelectItem value="rejected">Відхилені</SelectItem>
+            <SelectItem value="all">Всі</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -53,7 +53,7 @@ export function ManagerLeavesPage() {
       ) : leaves.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <CalendarDays className="h-12 w-12 text-muted-foreground/30 mb-3" />
-          <p className="text-muted-foreground">Нет заявок в этой категории</p>
+          <p className="text-muted-foreground">Немає заявок у цій категорії</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -63,7 +63,7 @@ export function ManagerLeavesPage() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Clock className="h-4 w-4 text-amber-500" />
-                  На рассмотрении
+                  На розгляді
                   <Badge variant="warning">{pending.length}</Badge>
                 </CardTitle>
               </CardHeader>
@@ -79,7 +79,7 @@ export function ManagerLeavesPage() {
           {(filter === 'all' || filter === 'approved' || filter === 'rejected') && resolved.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">История</CardTitle>
+                <CardTitle className="text-base">Історія</CardTitle>
                 <CardDescription>{resolved.length} заявок</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -116,9 +116,9 @@ function LeaveCard({
   readonly?: boolean
 }) {
   const statusConfig = {
-    pending:  { label: 'На рассмотрении', variant: 'warning' as const },
-    approved: { label: 'Одобрено',        variant: 'success' as const },
-    rejected: { label: 'Отклонено',       variant: 'destructive' as const },
+    pending:  { label: 'На розгляді',  variant: 'warning' as const },
+    approved: { label: 'Затверджено', variant: 'success' as const },
+    rejected: { label: 'Відхилено',   variant: 'destructive' as const },
   }
 
   const sc = statusConfig[leave.status]
@@ -150,7 +150,7 @@ function LeaveCard({
             disabled={isPending}
             onClick={() => onReview({ id: leave.id, status: 'rejected' })}
           >
-            <X className="h-3.5 w-3.5" /> Отклонить
+            <X className="h-3.5 w-3.5" /> Відхилити
           </Button>
           <Button
             size="sm"
@@ -158,7 +158,7 @@ function LeaveCard({
             disabled={isPending}
             onClick={() => onReview({ id: leave.id, status: 'approved' })}
           >
-            <Check className="h-3.5 w-3.5" /> Одобрить
+            <Check className="h-3.5 w-3.5" /> Затвердити
           </Button>
         </div>
       )}

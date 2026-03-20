@@ -12,20 +12,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import type { LeaveType } from '@/types/database'
 
 const STATUS_LABEL: Record<string, { label: string; variant: 'default' | 'success' | 'destructive' | 'warning' }> = {
-  pending:  { label: 'На рассмотрении', variant: 'warning' },
-  approved: { label: 'Одобрено',         variant: 'success' },
-  rejected: { label: 'Отклонено',        variant: 'destructive' },
+  pending:  { label: 'На розгляді',  variant: 'warning' },
+  approved: { label: 'Затверджено', variant: 'success' },
+  rejected: { label: 'Відхилено',   variant: 'destructive' },
 }
 
 const TYPE_LABEL: Record<string, string> = {
-  sick:     'Больничный',
-  vacation: 'Отпуск',
+  sick:     'Лікарняний',
+  vacation: 'Відпустка',
 }
 
 function formatDateRange(start: string, end: string) {
   const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
-  const s = new Date(start).toLocaleDateString('ru-RU', opts)
-  const e = new Date(end).toLocaleDateString('ru-RU', opts)
+  const s = new Date(start).toLocaleDateString('uk-UA', opts)
+  const e = new Date(end).toLocaleDateString('uk-UA', opts)
   return start === end ? s : `${s} – ${e}`
 }
 
@@ -50,11 +50,11 @@ export function EmployeeLeavesPage() {
     setFormError(null)
 
     if (!startDate || !endDate) {
-      setFormError('Укажите даты')
+      setFormError('Вкажіть дати')
       return
     }
     if (endDate < startDate) {
-      setFormError('Дата окончания не может быть раньше даты начала')
+      setFormError('Дата закінчення не може бути раніше дати початку')
       return
     }
 
@@ -72,12 +72,12 @@ export function EmployeeLeavesPage() {
     <div className="p-8 max-w-3xl space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Мои заявки</h2>
-          <p className="text-muted-foreground mt-1">Больничные и отпуска</p>
+          <h2 className="text-2xl font-bold">Мої заявки</h2>
+          <p className="text-muted-foreground mt-1">Лікарняні та відпустки</p>
         </div>
         <Button className="gap-2" onClick={() => setOpen(true)}>
           <Plus className="h-4 w-4" />
-          Новая заявка
+          Нова заявка
         </Button>
       </div>
 
@@ -85,7 +85,7 @@ export function EmployeeLeavesPage() {
       {pending.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">На рассмотрении</CardTitle>
+            <CardTitle className="text-base">На розгляді</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {pending.map(leave => (
@@ -98,8 +98,8 @@ export function EmployeeLeavesPage() {
       {/* History */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">История заявок</CardTitle>
-          <CardDescription>Все рассмотренные заявки</CardDescription>
+          <CardTitle className="text-base">Історія заявок</CardTitle>
+          <CardDescription>Всі розглянуті заявки</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -109,7 +109,7 @@ export function EmployeeLeavesPage() {
           ) : resolved.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <CalendarDays className="h-10 w-10 text-muted-foreground/40 mb-3" />
-              <p className="text-sm text-muted-foreground">История заявок пуста</p>
+              <p className="text-sm text-muted-foreground">Історія заявок порожня</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -125,7 +125,7 @@ export function EmployeeLeavesPage() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Новая заявка</DialogTitle>
+            <DialogTitle>Нова заявка</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 mt-2">
             {formError && (
@@ -141,15 +141,15 @@ export function EmployeeLeavesPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="vacation">Отпуск</SelectItem>
-                  <SelectItem value="sick">Больничный</SelectItem>
+                  <SelectItem value="vacation">Відпустка</SelectItem>
+                  <SelectItem value="sick">Лікарняний</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="startDate">Дата начала</Label>
+                <Label htmlFor="startDate">Дата початку</Label>
                 <Input
                   id="startDate"
                   type="date"
@@ -159,7 +159,7 @@ export function EmployeeLeavesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="endDate">Дата окончания</Label>
+                <Label htmlFor="endDate">Дата закінчення</Label>
                 <Input
                   id="endDate"
                   type="date"
@@ -173,15 +173,15 @@ export function EmployeeLeavesPage() {
 
             {startDate && endDate && endDate >= startDate && (
               <p className="text-sm text-muted-foreground">
-                Продолжительность: <span className="font-medium text-foreground">{daysBetween(startDate, endDate)} дн.</span>
+                Тривалість: <span className="font-medium text-foreground">{daysBetween(startDate, endDate)} дн.</span>
               </p>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="reason">Причина <span className="text-muted-foreground font-normal">(необязательно)</span></Label>
+              <Label htmlFor="reason">Причина <span className="text-muted-foreground font-normal">(необов'язково)</span></Label>
               <Textarea
                 id="reason"
-                placeholder="Укажите причину..."
+                placeholder="Вкажіть причину..."
                 value={reason}
                 onChange={e => setReason(e.target.value)}
                 rows={3}
@@ -190,10 +190,10 @@ export function EmployeeLeavesPage() {
 
             <DialogFooter className="gap-2">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Отмена
+                Скасувати
               </Button>
               <Button type="submit" disabled={submitLeave.isPending}>
-                {submitLeave.isPending ? 'Отправка...' : 'Отправить заявку'}
+                {submitLeave.isPending ? 'Надсилання...' : 'Надіслати заявку'}
               </Button>
             </DialogFooter>
           </form>

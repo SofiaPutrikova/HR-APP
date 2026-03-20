@@ -32,7 +32,7 @@ function calcHours(clockIn: string, clockOut: string | null): number {
 function formatHours(h: number): string {
   const hours = Math.floor(h)
   const mins  = Math.round((h - hours) * 60)
-  return `${hours}ч ${mins}м`
+  return `${hours}год ${mins}хв`
 }
 
 function calcLateMinutes(clockIn: string, startTime: string): number {
@@ -43,6 +43,14 @@ function calcLateMinutes(clockIn: string, startTime: string): number {
   return diff > 0 ? Math.floor(diff / 60_000) : 0
 }
 
+function formatLate(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (h === 0) return `${m} хв`
+  if (m === 0) return `${h} год`
+  return `${h} год ${m} хв`
+}
+
 interface EmployeeWeekRow {
   employee: Profile
   workedHours: number
@@ -51,7 +59,7 @@ interface EmployeeWeekRow {
   leaves: LeaveRequest[]
 }
 
-const DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+const DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд']
 
 export function ManagerReportsPage() {
   const [weekOffset, setWeekOffset] = useState(0)
@@ -132,13 +140,13 @@ export function ManagerReportsPage() {
   })
 
   // Week detail: per employee × per day
-  const weekLabel = `${days[0].toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })} – ${days[6].toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`
+  const weekLabel = `${days[0].toLocaleDateString('uk-UA', { day: 'numeric', month: 'long' })} – ${days[6].toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' })}`
 
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Недельный отчёт</h2>
+          <h2 className="text-2xl font-bold">Тижневий звіт</h2>
           <p className="text-muted-foreground mt-1">{weekLabel}</p>
         </div>
         <div className="flex items-center gap-1">
@@ -146,7 +154,7 @@ export function ManagerReportsPage() {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" className="h-8 px-3 text-xs" onClick={() => setWeekOffset(0)} disabled={weekOffset === 0}>
-            Текущая
+            Поточний
           </Button>
           <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setWeekOffset(w => w + 1)}>
             <ChevronRight className="h-4 w-4" />
@@ -157,22 +165,22 @@ export function ManagerReportsPage() {
       {/* Summary table */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Сводка по сотрудникам</CardTitle>
+          <CardTitle className="text-base">Зведення по співробітниках</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-6 space-y-3">{[1,2,3].map(i => <div key={i} className="h-10 animate-pulse rounded bg-muted" />)}</div>
           ) : employees.length === 0 ? (
-            <p className="p-6 text-sm text-muted-foreground">Нет сотрудников</p>
+            <p className="p-6 text-sm text-muted-foreground">Немає співробітників</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/40">
-                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">Сотрудник</th>
-                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Отработано</th>
-                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Опозданий</th>
-                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Прогулов</th>
-                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Отпуск / Б-лист</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">Співробітник</th>
+                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Відпрацьовано</th>
+                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Запізнень</th>
+                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Прогулів</th>
+                  <th className="text-center px-4 py-3 font-medium text-muted-foreground">Відпустка / Лікарняний</th>
                 </tr>
               </thead>
               <tbody>
@@ -196,7 +204,7 @@ export function ManagerReportsPage() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         {row.lateMinutes > 0 ? (
-                          <Badge variant="warning">{row.lateMinutes} мин</Badge>
+                          <Badge variant="warning">{formatLate(row.lateMinutes)}</Badge>
                         ) : (
                           <span className="text-muted-foreground text-xs">—</span>
                         )}
@@ -227,7 +235,7 @@ export function ManagerReportsPage() {
       {/* Detail table: employee × day */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Детализация по дням</CardTitle>
+          <CardTitle className="text-base">Деталізація по днях</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
@@ -237,7 +245,7 @@ export function ManagerReportsPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b bg-muted/40">
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground w-44 sticky left-0 bg-muted/40">Сотрудник</th>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground w-44 sticky left-0 bg-muted/40">Співробітник</th>
                     {days.map((day, i) => (
                       <th key={i} className="text-center px-2 py-3 font-medium text-muted-foreground min-w-[100px]">
                         <div>{DAY_NAMES[i]}</div>
@@ -263,7 +271,7 @@ export function ManagerReportsPage() {
                           return (
                             <td key={i} className="px-1 py-2 text-center">
                               <Badge variant="secondary" className="text-xs font-normal">
-                                {onLeave.type === 'sick' ? 'Б-лист' : 'Отпуск'}
+                                {onLeave.type === 'sick' ? 'Лікарняний' : 'Відпустка'}
                               </Badge>
                             </td>
                           )
@@ -280,10 +288,10 @@ export function ManagerReportsPage() {
                             <td key={i} className="px-1 py-2 text-center">
                               <div className="flex flex-col items-center gap-0.5">
                                 <span className="text-xs font-medium text-green-700">
-                                  {hrs > 0 ? formatHours(hrs) : 'работает'}
+                                  {hrs > 0 ? formatHours(hrs) : 'працює'}
                                 </span>
                                 {late > 0 && (
-                                  <span className="text-xs text-amber-600">+{late}м</span>
+                                  <span className="text-xs text-amber-600">+{formatLate(late)}</span>
                                 )}
                               </div>
                             </td>
@@ -295,7 +303,7 @@ export function ManagerReportsPage() {
                             {isPast ? (
                               <Badge variant="destructive" className="text-xs font-normal">прогул</Badge>
                             ) : (
-                              <span className="text-xs text-muted-foreground">{sched.start_time.slice(0,5)}</span>
+                              <span className="text-xs text-muted-foreground">{sched.start_time.slice(0, 5)}</span>
                             )}
                           </td>
                         )

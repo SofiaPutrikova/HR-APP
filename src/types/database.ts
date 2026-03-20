@@ -1,12 +1,14 @@
 export type Role = 'manager' | 'employee'
 export type LeaveType = 'sick' | 'vacation'
 export type LeaveStatus = 'pending' | 'approved' | 'rejected'
+export type UserStatus = 'pending' | 'active' | 'blocked'
 
 export interface Profile {
   id: string
   full_name: string
   email: string
   role: Role
+  status: UserStatus
   created_at: string
 }
 

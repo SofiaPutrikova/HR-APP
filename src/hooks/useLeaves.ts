@@ -7,6 +7,23 @@ export type LeaveRequestWithEmployee = LeaveRequest & {
   employee: { full_name: string }
 }
 
+// Approved leaves overlapping a date range (used in schedule views)
+export function useApprovedLeavesForWeek(startDate: string, endDate: string) {
+  return useQuery({
+    queryKey: ['leaves', 'approved', startDate, endDate],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('leave_requests')
+        .select('*')
+        .eq('status', 'approved')
+        .lte('start_date', endDate)
+        .gte('end_date', startDate)
+      if (error) throw error
+      return data as LeaveRequest[]
+    },
+  })
+}
+
 // Employee: own leave history
 export function useMyLeaves() {
   const { user } = useAuth()
