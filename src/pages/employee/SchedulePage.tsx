@@ -70,7 +70,7 @@ export function EmployeeSchedulePage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold">Розклад співробітників</h2>
+        <h2 className="text-2xl font-bold">Розклад</h2>
         <p className="text-muted-foreground mt-1">Робочі графіки на тиждень</p>
       </div>
 
