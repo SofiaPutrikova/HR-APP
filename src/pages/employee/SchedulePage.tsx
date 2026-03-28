@@ -44,6 +44,7 @@ export function EmployeeSchedulePage() {
         .from('profiles')
         .select('id, full_name, role')
         .eq('role', 'employee')
+        .eq('status', 'active')
         .order('full_name')
       if (error) throw error
       return data as Pick<Profile, 'id' | 'full_name' | 'role'>[]

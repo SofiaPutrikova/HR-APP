@@ -64,6 +64,7 @@ export function ManagerDashboardPage() {
         .from('profiles')
         .select('*', { count: 'exact', head: true })
         .eq('role', 'employee')
+        .eq('status', 'active')
       if (error) throw error
       return count ?? 0
     },

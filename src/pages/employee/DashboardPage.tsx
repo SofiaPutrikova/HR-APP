@@ -80,7 +80,7 @@ export function EmployeeDashboardPage() {
       <div>
         <p className="text-sm text-muted-foreground capitalize">{dayOfWeek}</p>
         <h2 className="text-2xl font-bold mt-0.5 tracking-tight">
-          Ласкаво просимо, {profile?.full_name?.split(' ')[0]}
+          Ласкаво просимо, {profile?.full_name}
         </h2>
       </div>
 
