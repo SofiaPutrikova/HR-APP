@@ -69,9 +69,9 @@ export function ManagerReportsPage() {
 
   // Load everything in parallel
   const { data: employees = [] } = useQuery<Profile[]>({
-    queryKey: ['employees'],
+    queryKey: ['employees', 'active'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('profiles').select('*').eq('role', 'employee').order('full_name')
+      const { data, error } = await supabase.from('profiles').select('*').eq('role', 'employee').eq('status', 'active').order('full_name')
       if (error) throw error
       return data
     },

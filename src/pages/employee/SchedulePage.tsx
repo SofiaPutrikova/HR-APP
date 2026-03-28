@@ -38,7 +38,7 @@ export function EmployeeSchedulePage() {
 
   // Load all employees
   const { data: employees = [] } = useQuery({
-    queryKey: ['employees'],
+    queryKey: ['employees', 'active'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
