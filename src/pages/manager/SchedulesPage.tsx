@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react'
-import { useEmployees } from '@/hooks/useEmployees'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 import { useWeekSchedules } from '@/hooks/useSchedules'
 import { useUpsertSchedule, useDeleteSchedule } from '@/hooks/useManagerSchedules'
 import { useApprovedLeavesForWeek } from '@/hooks/useLeaves'
@@ -49,12 +50,23 @@ export function ManagerSchedulesPage() {
   const endDate   = toDateStr(days[6])
   const today     = toDateStr(new Date())
 
-  const { data: employees = [] } = useEmployees()
+  const { data: workers = [] } = useQuery({
+    queryKey: ['employees', 'active', 'schedule'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('role', 'employee')
+        .eq('status', 'active')
+        .order('full_name')
+      if (error) throw error
+      return data as Profile[]
+    },
+  })
   const { data: schedules = [], isLoading } = useWeekSchedules(startDate, endDate)
   const { data: approvedLeaves = [] } = useApprovedLeavesForWeek(startDate, endDate)
   const upsert = useUpsertSchedule()
   const remove = useDeleteSchedule()
-  const workers = employees.filter(e => e.role === 'employee')
 
   function getLeave(employeeId: string, dateStr: string) {
     return approvedLeaves.find(l => l.employee_id === employeeId && l.start_date <= dateStr && l.end_date >= dateStr)
